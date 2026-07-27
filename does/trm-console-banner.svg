@@ -1,0 +1,31 @@
+<svg width="1440" height="520" viewBox="0 0 1440 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1440" height="520" fill="#050814"/>
+  <path d="M0 0H1440V520H0V0Z" fill="url(#bg)"/>
+  <path d="M-110 322L1176 -78" stroke="#2368FF" stroke-width="3" opacity="0.75"/>
+  <path d="M760 360L1510 -260" stroke="#2F8CFF" stroke-width="3" opacity="0.7"/>
+  <path d="M860 560L1518 58" stroke="#FFB020" stroke-width="6" opacity="0.9"/>
+  <g transform="translate(96 86)">
+    <rect x="28" y="0" width="54" height="96" rx="7" transform="rotate(45 28 0)" fill="#FFB020"/>
+    <rect x="0" y="62" width="54" height="96" rx="7" transform="rotate(-45 0 62)" fill="#2F6BFF"/>
+    <rect x="76" y="62" width="54" height="96" rx="7" transform="rotate(45 76 62)" fill="#27D6B6"/>
+  </g>
+  <text x="240" y="120" fill="white" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="700">TRM 云原生 Cluster Console</text>
+  <text x="240" y="176" fill="#AAB2C5" font-family="Inter, Arial, sans-serif" font-size="22" letter-spacing="5">MULTI-CLUSTER · EDGE CLOUD · AIOPS · FINOPS</text>
+  <text x="96" y="312" fill="white" font-family="Inter, Arial, sans-serif" font-size="58" font-weight="700">让每一核算力，都找到它的秩序。</text>
+  <text x="100" y="368" fill="#D1D6E5" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="500">Let every core of computing power find its order.</text>
+  <g transform="translate(100 430)">
+    <rect width="150" height="42" rx="8" fill="#473AFF"/>
+    <text x="28" y="27" fill="white" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700">Vue 3</text>
+    <rect x="166" width="150" height="42" rx="8" fill="#17203A" stroke="#33406A"/>
+    <text x="194" y="27" fill="white" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700">Pinia</text>
+    <rect x="332" width="190" height="42" rx="8" fill="#17203A" stroke="#33406A"/>
+    <text x="360" y="27" fill="white" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700">Tailwind CSS</text>
+  </g>
+  <defs>
+    <radialGradient id="bg" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1180 84) rotate(139) scale(750 520)">
+      <stop stop-color="#1239A3"/>
+      <stop offset="0.42" stop-color="#07143F"/>
+      <stop offset="1" stop-color="#02030B"/>
+    </radialGradient>
+  </defs>
+</svg>
