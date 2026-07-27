@@ -2,7 +2,7 @@
 
 ![TRM 云原生 Cluster Console](does/img.png)
 
-TRM `云原生智能研运平台` 是一个面向 Kubernetes 多集群、边缘云、AIOPS 和 FinOps 场景的前端控制台 Demo。项目当前从轻量原型开始，重点验证多集群接入、列表查询、集群添加、二级菜单信息架构和开源产品风格的控制台体验。
+TRM `云原生智能研运平台` 是一个面向 Kubernetes 多集群、边缘云、AIOPS 和 FinOps 场景的前端控制台。
 
 ## 功能特性
 
