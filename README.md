@@ -23,6 +23,14 @@ TRM `云原生智能研运平台` 是一个面向 Kubernetes 多集群、边缘�
 
 ## 技术栈
 
+- 前端	Vue 3 + TypeScript + Vite + Element Plus + ECharts
+- 后端	Go + Gin + GORM + client-go
+- 数据	PostgreSQL + Redis
+- 监控	Prometheus + Grafana
+- K8s 交互	client-go + controller-runtime
+- CI/CD	GitLab CI + Argo CD
+- 消息	RabbitMQ / Kafka
+- 权限	Casbin + JWT
 
 
 ## 快速开始
@@ -30,8 +38,8 @@ TRM `云原生智能研运平台` 是一个面向 Kubernetes 多集群、边缘�
 
 
 
-## 项目结构
-
+## 项目架构
+![TRM 云原生 Cluster Console](does/架构图.svg)
 
 
 ## License
