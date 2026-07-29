@@ -33,7 +33,7 @@ func addOrUpdate(c *gin.Context, method string) {
 		c.JSON(http.StatusOK, response)
 		return
 	}
-	fmt.Println("clusterConfig:", clusterConfig.Kubeconfig)
+	//fmt.Println("clusterConfig:", clusterConfig.Kubeconfig)
 	clusterStatus, err := clusterConfig.GetClusterStatusV2()
 	if err != nil {
 		response := returndata.NewReturnData()
@@ -43,7 +43,6 @@ func addOrUpdate(c *gin.Context, method string) {
 		return
 	}
 	clusterStatusMap, _ := changedatastyle.StructToMap(clusterStatus)
-	fmt.Println(clusterStatusMap)
 
 	logs.Info(map[string]interface{}{"clusterName": clusterConfig.DisplayName, "cluster_Id": clusterConfig.ID}, "集群信息解析成功，开始添加集群")
 	// 创建集群信息的secret
@@ -52,7 +51,7 @@ func addOrUpdate(c *gin.Context, method string) {
 	clusterConfigSecret.Namespace = config.MetadataNamespace
 	//添加标签
 	clusterConfigSecret.Labels = make(map[string]string)
-	clusterConfigSecret.Labels["kubeasy.com/cluster.metadata"] = "true"
+	clusterConfigSecret.Labels[config.ClusterConfigSecretLabelKey] = config.ClusterConfigSecretLabelValue
 	clusterConfigSecret.Labels["name"] = clusterConfig.DisplayName
 
 	// 添加注解，保存集群的配置信息
@@ -80,6 +79,8 @@ func addOrUpdate(c *gin.Context, method string) {
 	}
 
 	//创建成功
+	logs.Info(map[string]interface{}{"ClusterID": clusterConfig.ID, "type": "secret"}, arg)
+	config.ClusterKubeconfig[clusterConfigSecret.Name] = clusterConfigSecret.StringData["kubeconfig"]
 	response := returndata.NewReturnData()
 	response.Code = http.StatusOK
 	response.Message = fmt.Sprintf("%s 集群信息添加成功", clusterConfigSecret.Name)

@@ -52,4 +52,22 @@ func metadataInit() {
 	} else {
 		logs.Info(map[string]interface{}{"namespace": config.MetadataNamespace}, "元数据命名空间已存在,版本号为 "+inclusterVersion.String())
 	}
+
+	// 统一管理kubeconfig
+	// 初始化ClusterkubeConfig
+	config.ClusterKubeconfig = make(map[string]string)
+	// 查询相关的namespace
+
+	listOptions := metav1.ListOptions{
+		LabelSelector: fmt.Sprintf("%s=%s", config.ClusterConfigSecretLabelKey, config.ClusterConfigSecretLabelValue),
+	}
+
+	secretList, _ := config.InclusterClientSet.CoreV1().Secrets(config.MetadataNamespace).List(context.TODO(), listOptions)
+	//将相应集群的kubeconfig通过key/value方式存起来
+	for _, secret := range secretList.Items {
+		config.ClusterKubeconfig[secret.Name] = string(secret.Data["kubeconfig"])
+	}
+
+	// 打印当前集群的配置
+	fmt.Println("当前集群配置:", config.ClusterKubeconfig)
 }

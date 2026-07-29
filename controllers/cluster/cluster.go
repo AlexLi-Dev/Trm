@@ -105,6 +105,7 @@ func DeleteCluster(c *gin.Context) {
 
 	if clusterName == "" {
 		logs.Info(map[string]interface{}{"function": "DeleteCluster"}, "clustername传入了空值")
+
 		response := returndata.NewReturnData()
 		response.Code = http.StatusBadRequest
 		response.Message = "clusterName is required"
@@ -123,6 +124,7 @@ func DeleteCluster(c *gin.Context) {
 		response.Code = http.StatusInternalServerError
 		response.Message = "删除失败" + err.Error()
 	} else {
+		delete(config.ClusterKubeconfig, clusterName)
 		response.Code = http.StatusOK
 		response.Message = clusterName + "删除成功"
 	}
@@ -169,8 +171,11 @@ func GetCluster(c *gin.Context) {
 
 func ListCluster(c *gin.Context) {
 	logs.Info(nil, "列出所有集群信息")
+	listOptions := metav1.ListOptions{
+		LabelSelector: fmt.Sprintf("%s=%s", config.ClusterConfigSecretLabelKey, config.ClusterConfigSecretLabelValue),
+	}
 
-	clusterList, err := config.InclusterClientSet.CoreV1().Secrets(config.MetadataNamespace).List(context.TODO(), metav1.ListOptions{})
+	clusterList, err := config.InclusterClientSet.CoreV1().Secrets(config.MetadataNamespace).List(context.TODO(), listOptions)
 	response := struct {
 		Code    int           `json:"code"`
 		Message string        `json:"message"`

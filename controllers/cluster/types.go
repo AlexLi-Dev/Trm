@@ -15,7 +15,7 @@ import (
 // 定义一个人结构体，用于描述创建集群所用的配置信息
 
 type ClusterInfo struct {
-	ID int `json:"id"`
+	ID string `json:"id"`
 	//Name string `json:"name"`
 	DisplayName string `json:"displayname"` //别名
 	City        string `json:"city"`        // 城市
@@ -93,7 +93,6 @@ func (c *ClusterConfig) GetClusterStatusV2() (ClusterStatus, error) {
 	clusterStatus := ClusterStatus{}
 	clusterStatus.ClusterInfo = c.ClusterInfo
 	//创建一个clientset
-	fmt.Println("----", c.Kubeconfig)
 	restConfig, err := clientcmd.RESTConfigFromKubeConfig([]byte(c.Kubeconfig))
 	if err != nil {
 		return clusterStatus, err
