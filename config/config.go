@@ -7,7 +7,9 @@ import (
 )
 
 const (
-	TimeFormat string = "2006-01-02 15:04:05"
+	TimeFormat                    string = "2006-01-02 15:04:05"
+	ClusterConfigSecretLabelKey   string = "kubeasy.com/cluster.metadata"
+	ClusterConfigSecretLabelValue string = "true"
 )
 
 var (
@@ -23,6 +25,7 @@ var (
 
 	//incluster clientset
 	InclusterClientSet *kubernetes.Clientset
+	ClusterKubeconfig  map[string]string
 )
 
 func init() {
