@@ -9,7 +9,7 @@ import (
 func RegisterSubRouter(authApiGroup *gin.RouterGroup) {
 	namespaceApiGroup := authApiGroup.Group("/namespace")
 	namespaceApiGroup.POST("/add", namespace.AddNameSpace)
-	namespaceApiGroup.GET("/delete", namespace.DeleteNameSpace)
+	namespaceApiGroup.Any("/delete", namespace.DeleteNameSpace)
 	namespaceApiGroup.POST("/update", namespace.UpdateNameSpace)
 	namespaceApiGroup.GET("/get", namespace.GetNameSpace)
 	namespaceApiGroup.GET("/list", namespace.ListNameSpace)
