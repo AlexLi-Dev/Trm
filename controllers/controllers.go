@@ -31,14 +31,27 @@ type BasicInfo struct {
 }
 
 type Info struct {
-	BasicInfo
-	ReturnData returndata.ReturnData
+	BasicInfo     BasicInfo `json:"basicInfo"`
+	ReturnData    returndata.ReturnData
+	LabelSelector string   `json:"labelSelector" form:"labelSelector"`
+	FieldSelector string   `json:"fieldSelector" form:"fieldSelector"`
+	ForceDeletion booltype `json:"forceDeletion" form:"forceDeletion"`
 }
 
 // ==== 改造为接口方式======
 
+type booltype bool
+
+func (booltype booltype) ToInt64() *int64 {
+	var n int64
+	if bool(booltype) {
+		n = 1
+	}
+	return &n
+}
+
 func (b *Info) Create(c *gin.Context, kubeUtilsInstance kubeutils.KubeUtilser) {
-	err := kubeUtilsInstance.Create(b.NameSpace)
+	err := kubeUtilsInstance.Create(b.BasicInfo.NameSpace)
 	if err != nil {
 		b.ReturnData.Message = fmt.Sprintf("创建失败 %s", err.Error())
 		b.ReturnData.Code = 400
@@ -51,13 +64,91 @@ func (b *Info) Create(c *gin.Context, kubeUtilsInstance kubeutils.KubeUtilser) {
 }
 
 func (b *Info) Update(c *gin.Context, kubeUtilsInstance kubeutils.KubeUtilser) {
-	err := kubeUtilsInstance.Update(b.NameSpace)
+	err := kubeUtilsInstance.Update(b.BasicInfo.NameSpace)
 	if err != nil {
 		b.ReturnData.Message = fmt.Sprintf("更新失败 %s", err.Error())
 		b.ReturnData.Code = 400
 		logs.Error(nil, b.ReturnData.Message)
 		c.JSON(http.StatusOK, b.ReturnData)
 		return
+	}
+	c.JSON(http.StatusOK, b.ReturnData)
+	return
+}
+
+func (b *Info) List(c *gin.Context, kubeUtilsInstance kubeutils.KubeUtilser) {
+	items, err := kubeUtilsInstance.List(b.BasicInfo.NameSpace, b.LabelSelector, b.FieldSelector)
+	if err != nil {
+		b.ReturnData.Message = fmt.Sprintf("查询列表失败 %s", err.Error())
+		b.ReturnData.Code = 400
+		logs.Error(nil, b.ReturnData.Message)
+	} else {
+		data := make(map[string]interface{})
+		data["items"] = items
+		b.ReturnData.Data = data
+	}
+	c.JSON(http.StatusOK, b.ReturnData)
+	return
+}
+
+func (b *Info) Get(c *gin.Context, kubeUtilsInstance kubeutils.KubeUtilser) {
+	item, err := kubeUtilsInstance.Get(b.BasicInfo.NameSpace, b.BasicInfo.Name)
+	if err != nil {
+		b.ReturnData.Message = fmt.Sprintf("查询失败 %s", err.Error())
+		b.ReturnData.Code = 400
+		logs.Error(nil, b.ReturnData.Message)
+	} else {
+		data := make(map[string]interface{})
+		data["item"] = item
+		b.ReturnData.Data = data
+	}
+	c.JSON(http.StatusOK, b.ReturnData)
+	return
+}
+
+func (b *Info) Delete(c *gin.Context, kubeUtilsInstance kubeutils.KubeUtilser) {
+	err := kubeUtilsInstance.Delete(b.BasicInfo.NameSpace, b.BasicInfo.Name, b.ForceDeletion.ToInt64())
+	if err != nil {
+		b.ReturnData.Message = fmt.Sprintf("删除失败 %s", err.Error())
+		b.ReturnData.Code = 400
+		logs.Error(nil, b.ReturnData.Message)
+	} else {
+		b.ReturnData.Message = fmt.Sprintf("删除成功 %s", b.BasicInfo.Name)
+		b.ReturnData.Code = 200
+	}
+	c.JSON(http.StatusOK, b.ReturnData)
+	return
+}
+
+type KubeUtilserDef interface {
+	kubeutils.KubeUtilser
+	DeleteListwithfaild(string, []string, *int64) (failed []string)
+}
+type DelepodList struct {
+	kubeutils.Pod
+}
+
+func (c DelepodList) DeleteListwithfaild(namespace string, nameList []string, gracePeriodSeconds *int64) (failed []string) {
+	for _, name := range nameList {
+		if err := c.Delete(namespace, name, gracePeriodSeconds); err != nil {
+			failed = append(failed, fmt.Sprintf("%s:%s", name, err.Error()))
+		}
+	}
+	return failed
+}
+
+func (b *Info) DeleteList(c *gin.Context, kubeUtilsInstance KubeUtilserDef) {
+	fmt.Printf("name=[%s], deleteList=%v\n", b.BasicInfo.Name, b.BasicInfo.DeleteList)
+	failed := kubeUtilsInstance.DeleteListwithfaild(b.BasicInfo.NameSpace, b.BasicInfo.DeleteList, b.ForceDeletion.ToInt64())
+	if len(failed) > 0 {
+		b.ReturnData.Message = fmt.Sprintf("删除失败 %s", failed)
+		b.ReturnData.Code = 400
+		data := make(map[string]interface{})
+		data["items"] = failed
+		logs.Error(nil, b.ReturnData.Message)
+	} else {
+		b.ReturnData.Message = fmt.Sprintf("删除成功 %s", b.BasicInfo.Name)
+		b.ReturnData.Code = 200
 	}
 	c.JSON(http.StatusOK, b.ReturnData)
 	return
@@ -74,14 +165,14 @@ func NewInfo(c *gin.Context, basicinfo *Info, returnDataMsg string) (kubeconfig 
 		//fmt.Printf("content-type=%s\n", c.ContentType())
 		//fmt.Printf("raw query=%s\n", c.Request.URL.RawQuery)
 		//fmt.Printf("query map=%v\n", c.Request.URL.Query())
-		err = c.ShouldBindQuery(&basicinfo)
+		err = c.ShouldBindQuery(&basicinfo.BasicInfo)
 	case http.MethodPost:
 		//debug
 		//fmt.Printf("method=%s\n", c.Request.Method)
 		//fmt.Printf("content-type=%s\n", c.ContentType())
 		//fmt.Printf("raw query=%s\n", c.Request.URL.RawQuery)
 		//fmt.Printf("query map=%v\n", c.Request.URL.Query())
-		err = c.ShouldBindJSON(&basicinfo)
+		err = c.ShouldBindJSON(&basicinfo.BasicInfo)
 	default:
 		err = fmt.Errorf("不支持的请求方法: %s", c.Request.Method)
 	}
@@ -92,7 +183,7 @@ func NewInfo(c *gin.Context, basicinfo *Info, returnDataMsg string) (kubeconfig 
 		return
 	}
 
-	kubeconfig = config.ClusterKubeconfig[basicinfo.ClusterId]
+	kubeconfig = config.ClusterKubeconfig[basicinfo.BasicInfo.ClusterId]
 	return kubeconfig, nil
 }
 

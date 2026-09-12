@@ -10,6 +10,7 @@ func RegisterSubRouter(authApiGroup *gin.RouterGroup) {
 	podApiGroup := authApiGroup.Group("/pod")
 	podApiGroup.POST("/add", pod.Addpod)
 	podApiGroup.Any("/delete", pod.Deletepod)
+	podApiGroup.Any("/deletelist", pod.DeletepodList)
 	podApiGroup.POST("/update", pod.Updatepod)
 	podApiGroup.GET("/get", pod.Getpod)
 	podApiGroup.GET("/list", pod.Listpod)
