@@ -105,5 +105,29 @@ func Getpod(c *gin.Context) {
 
 // 查询所有pod
 func Listpod(c *gin.Context) {
-	logs.Info(nil, "列出所有集群信息")
+	logs.Info(nil, "列出所有pod list信息")
+	respdata := returndata.NewReturnData()
+	clientset, basicInfo, err := controllers.BasicInit(c, nil)
+	if err != nil {
+		respdata.Code = 400
+		respdata.Message = err.Error()
+		c.JSON(http.StatusOK, respdata)
+		return
+	}
+
+	namespaceList, err := clientset.CoreV1().Pods(basicInfo.NameSpace).List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		respdata.Code = 400
+		respdata.Message = fmt.Sprintf("ListNamespace块 列出所有 pod 失败: %s", err.Error())
+		c.JSON(http.StatusOK, respdata)
+		return
+	}
+	data := make(map[string]interface{})
+	data["items"] = namespaceList.Items
+
+	respdata.Code = 200
+	respdata.Message = "listpod块 查询成功"
+	respdata.Data = data
+
+	c.JSON(http.StatusOK, respdata)
 }

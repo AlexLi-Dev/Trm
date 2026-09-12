@@ -57,12 +57,12 @@ func BasicInit(c *gin.Context, item any) (clientset *kubernetes.Clientset, basic
 	kubeconfig := config.ClusterKubeconfig[basicinfo.ClusterId]
 	restConfig, err := clientcmd.RESTConfigFromKubeConfig([]byte(kubeconfig))
 	if err != nil {
-		return nil, basicinfo, fmt.Errorf("AddNamespace块 kubeconfig解析错误 %s", err.Error())
+		return nil, basicinfo, fmt.Errorf("basicinit 块 kubeconfig解析错误 %s", err.Error())
 	}
 
 	clientset, err = kubernetes.NewForConfig(restConfig)
 	if err != nil {
-		return nil, basicinfo, fmt.Errorf("AddNamespace块 客户端工具创建失败  %s", err.Error())
+		return nil, basicinfo, fmt.Errorf("basicinit 块 客户端工具创建失败  %s", err.Error())
 	}
 	return clientset, basicinfo, nil
 }
