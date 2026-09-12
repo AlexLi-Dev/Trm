@@ -100,7 +100,30 @@ func Deletepod(c *gin.Context) {
 // 查询pod详情
 func Getpod(c *gin.Context) {
 	logs.Info(nil, "查询pod")
+	respdata := returndata.NewReturnData()
+	clientset, basicInfo, err := controllers.BasicInit(c, nil)
+	if err != nil {
+		respdata.Code = 400
+		respdata.Message = err.Error()
+		c.JSON(http.StatusOK, respdata)
+		return
+	}
 
+	pod, err := clientset.CoreV1().Pods(basicInfo.NameSpace).Get(context.TODO(), basicInfo.Name, metav1.GetOptions{})
+	if err != nil {
+		respdata.Code = 400
+		respdata.Message = fmt.Sprintf("Listpod块 查询 pod失败: %s", err.Error())
+		c.JSON(http.StatusOK, respdata)
+		return
+	}
+
+	data := make(map[string]interface{})
+	data["item"] = pod
+
+	respdata.Code = 200
+	respdata.Message = "listNamespace块 查询成功"
+	respdata.Data = data
+	c.JSON(http.StatusOK, respdata)
 }
 
 // 查询所有pod
@@ -114,11 +137,15 @@ func Listpod(c *gin.Context) {
 		c.JSON(http.StatusOK, respdata)
 		return
 	}
+	if basicInfo.NameSpace == "" {
+		logs.Info(nil, "pod模块，namespace为空，则默认default")
+		basicInfo.NameSpace = "default"
+	}
 
 	namespaceList, err := clientset.CoreV1().Pods(basicInfo.NameSpace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		respdata.Code = 400
-		respdata.Message = fmt.Sprintf("ListNamespace块 列出所有 pod 失败: %s", err.Error())
+		respdata.Message = fmt.Sprintf("Listpod块 列出所有 pod 失败: %s", err.Error())
 		c.JSON(http.StatusOK, respdata)
 		return
 	}
