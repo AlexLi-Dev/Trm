@@ -4,6 +4,7 @@ package routers
 import (
 	"github.com/AlexLi-Dev/Trm/routers/cluster"
 	"github.com/AlexLi-Dev/Trm/routers/namespace"
+	"github.com/AlexLi-Dev/Trm/routers/pod"
 	"github.com/gin-gonic/gin"
 )
 import "github.com/AlexLi-Dev/Trm/routers/auth"
@@ -13,4 +14,5 @@ func RegisterRouters(r *gin.Engine) {
 	auth.RegisterSubRouter(apiGroup)
 	cluster.RegisterSubRouter(apiGroup)
 	namespace.RegisterSubRouter(apiGroup)
+	pod.RegisterSubRouter(apiGroup)
 }

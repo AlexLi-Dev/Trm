@@ -9,7 +9,6 @@ import (
 	"github.com/AlexLi-Dev/Trm/config"
 	"github.com/AlexLi-Dev/Trm/utils/logs"
 	"github.com/gin-gonic/gin"
-	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 )
@@ -22,12 +21,15 @@ type BasicInfo struct {
 
 	//实现更新功能，新增字段
 	Item interface{} `json:"item"`
+
+	// 删除列式pod
+	DeleteList []string `json:"deleteList"`
 }
 
-func BasicInit(c *gin.Context) (clientset *kubernetes.Clientset, basicinfo BasicInfo, err error) {
+func BasicInit(c *gin.Context, item any) (clientset *kubernetes.Clientset, basicinfo BasicInfo, err error) {
 	logs.Info(nil, "初始化clientset")
-	var ns corev1.Namespace
-	basicinfo.Item = &ns
+	//var ns corev1.Namespace
+	basicinfo.Item = item
 
 	switch c.Request.Method {
 	case http.MethodGet:

@@ -27,7 +27,7 @@ func AddNameSpace(c *gin.Context) {
 	//	return
 	//}
 	respdata := returndata.NewReturnData()
-	clientset, basicInfo, err := controllers.BasicInit(c)
+	clientset, basicInfo, err := controllers.BasicInit(c, nil)
 	if err != nil {
 		respdata.Code = 400
 		respdata.Message = err.Error()
@@ -71,7 +71,8 @@ func AddNameSpace(c *gin.Context) {
 func UpdateNameSpace(c *gin.Context) {
 	logs.Info(nil, "更新namespace")
 	respdata := returndata.NewReturnData()
-	clientset, basicInfo, err := controllers.BasicInit(c)
+	var ns corev1.Namespace
+	clientset, basicInfo, err := controllers.BasicInit(c, &ns)
 	if err != nil {
 		respdata.Code = 400
 		respdata.Message = err.Error()
@@ -79,8 +80,8 @@ func UpdateNameSpace(c *gin.Context) {
 		return
 	}
 
-	ns, _ := basicInfo.Item.(*corev1.Namespace)
-	updatens, err := clientset.CoreV1().Namespaces().Update(context.TODO(), ns, metav1.UpdateOptions{})
+	ns, _ = basicInfo.Item.(corev1.Namespace)
+	updatens, err := clientset.CoreV1().Namespaces().Update(context.TODO(), &ns, metav1.UpdateOptions{})
 	if err != nil {
 		respdata.Code = 400
 		respdata.Message = fmt.Sprintf("updateNamespace块 namespace删除失败 %s", err.Error())
@@ -101,7 +102,7 @@ func UpdateNameSpace(c *gin.Context) {
 func DeleteNameSpace(c *gin.Context) {
 	logs.Info(nil, "删除namespace")
 	respdata := returndata.NewReturnData()
-	clientset, basicInfo, err := controllers.BasicInit(c)
+	clientset, basicInfo, err := controllers.BasicInit(c, nil)
 	if err != nil {
 		respdata.Code = 400
 		respdata.Message = err.Error()
@@ -141,7 +142,7 @@ func DeleteNameSpace(c *gin.Context) {
 func GetNameSpace(c *gin.Context) {
 	logs.Info(nil, "查询namespace")
 	respdata := returndata.NewReturnData()
-	clientset, basicInfo, err := controllers.BasicInit(c)
+	clientset, basicInfo, err := controllers.BasicInit(c, nil)
 	if err != nil {
 		respdata.Code = 400
 		respdata.Message = err.Error()
@@ -170,7 +171,7 @@ func GetNameSpace(c *gin.Context) {
 func ListNameSpace(c *gin.Context) {
 	logs.Info(nil, "列出所有集群信息")
 	respdata := returndata.NewReturnData()
-	clientset, _, err := controllers.BasicInit(c)
+	clientset, _, err := controllers.BasicInit(c, nil)
 	if err != nil {
 		respdata.Code = 400
 		respdata.Message = err.Error()
