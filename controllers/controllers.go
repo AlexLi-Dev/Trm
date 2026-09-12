@@ -8,9 +8,13 @@ import (
 
 	"github.com/AlexLi-Dev/Trm/config"
 	"github.com/AlexLi-Dev/Trm/utils/logs"
+	"github.com/AlexLi-Dev/Trm/utils/returndata"
+	"github.com/dotbalo/kubeutils/kubeutils"
 	"github.com/gin-gonic/gin"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+	//"k8s.io/client-go/kubernetes"
+	//"k8s.io/client-go/tools/clientcmd"
 )
 
 // 定义全局的数据结构
@@ -24,6 +28,72 @@ type BasicInfo struct {
 
 	// 删除列式pod
 	DeleteList []string `json:"deleteList"`
+}
+
+type Info struct {
+	BasicInfo
+	ReturnData returndata.ReturnData
+}
+
+// ==== 改造为接口方式======
+
+func (b *Info) Create(c *gin.Context, kubeUtilsInstance kubeutils.KubeUtilser) {
+	err := kubeUtilsInstance.Create(b.NameSpace)
+	if err != nil {
+		b.ReturnData.Message = fmt.Sprintf("创建失败 %s", err.Error())
+		b.ReturnData.Code = 400
+		logs.Error(nil, b.ReturnData.Message)
+		c.JSON(http.StatusOK, b.ReturnData)
+		return
+	}
+	c.JSON(http.StatusOK, b.ReturnData)
+	return
+}
+
+func (b *Info) Update(c *gin.Context, kubeUtilsInstance kubeutils.KubeUtilser) {
+	err := kubeUtilsInstance.Update(b.NameSpace)
+	if err != nil {
+		b.ReturnData.Message = fmt.Sprintf("更新失败 %s", err.Error())
+		b.ReturnData.Code = 400
+		logs.Error(nil, b.ReturnData.Message)
+		c.JSON(http.StatusOK, b.ReturnData)
+		return
+	}
+	c.JSON(http.StatusOK, b.ReturnData)
+	return
+}
+
+func NewInfo(c *gin.Context, basicinfo *Info, returnDataMsg string) (kubeconfig string, err error) {
+	logs.Info(nil, "newbasicinfo")
+	basicinfo.ReturnData.Message = returnDataMsg
+	basicinfo.ReturnData.Code = http.StatusOK
+	switch c.Request.Method {
+	case http.MethodGet:
+		//debug
+		//fmt.Printf("method=%s\n", c.Request.Method)
+		//fmt.Printf("content-type=%s\n", c.ContentType())
+		//fmt.Printf("raw query=%s\n", c.Request.URL.RawQuery)
+		//fmt.Printf("query map=%v\n", c.Request.URL.Query())
+		err = c.ShouldBindQuery(&basicinfo)
+	case http.MethodPost:
+		//debug
+		//fmt.Printf("method=%s\n", c.Request.Method)
+		//fmt.Printf("content-type=%s\n", c.ContentType())
+		//fmt.Printf("raw query=%s\n", c.Request.URL.RawQuery)
+		//fmt.Printf("query map=%v\n", c.Request.URL.Query())
+		err = c.ShouldBindJSON(&basicinfo)
+	default:
+		err = fmt.Errorf("不支持的请求方法: %s", c.Request.Method)
+	}
+	if err != nil {
+		basicinfo.ReturnData.Message = fmt.Sprintf(" newinfo 请求出错 %s", err.Error())
+		basicinfo.ReturnData.Code = 400
+		c.JSON(http.StatusOK, basicinfo.ReturnData)
+		return
+	}
+
+	kubeconfig = config.ClusterKubeconfig[basicinfo.ClusterId]
+	return kubeconfig, nil
 }
 
 func BasicInit(c *gin.Context, item any) (clientset *kubernetes.Clientset, basicinfo BasicInfo, err error) {

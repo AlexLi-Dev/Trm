@@ -10,7 +10,6 @@ import (
 	"github.com/AlexLi-Dev/Trm/controllers"
 	"github.com/AlexLi-Dev/Trm/utils/logs"
 	"github.com/AlexLi-Dev/Trm/utils/returndata"
-	"github.com/dotbalo/kubeutils/kubeutils"
 	"github.com/gin-gonic/gin"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -20,16 +19,26 @@ import (
 func Addpod(c *gin.Context) {
 	logs.Info(nil, "添加pod")
 	var pod corev1.Pod
-	var info controllers.Info
-	info.Item = &pod
-	kubeconfig, err := controllers.NewInfo(c, &info, "创建成功")
+	respdata := returndata.NewReturnData()
+	clientset, basicInfo, err := controllers.BasicInit(c, &pod)
 	if err != nil {
-		c.JSON(http.StatusOK, info.ReturnData)
+		respdata.Code = 400
+		respdata.Message = err.Error()
+		c.JSON(http.StatusOK, respdata)
+		return
 	}
-	var kubeUtilser kubeutils.KubeUtilser
-	instance := kubeutils.NewPod(kubeconfig, &pod)
-	kubeUtilser = instance
-	info.Create(c, kubeUtilser)
+	namespace := basicInfo.NameSpace
+	pod.ObjectMeta.Namespace = namespace // 这里需要补齐yaml中的namespace
+	_, err = clientset.CoreV1().Pods(namespace).Create(context.TODO(), &pod, metav1.CreateOptions{})
+	if err != nil {
+		respdata.Code = 400
+		respdata.Message = fmt.Sprintf("Addpod块 namespace创建失败 %s", err.Error())
+		c.JSON(http.StatusOK, respdata)
+		return
+	}
+	respdata.Code = 200
+	respdata.Message = "Addpod块 namespace创建成功"
+	c.JSON(http.StatusOK, respdata)
 }
 
 // 更新pod

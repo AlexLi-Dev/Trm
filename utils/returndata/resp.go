@@ -10,3 +10,10 @@ type returnData struct {
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
 }
+
+// 接口方式改造
+type ReturnData struct {
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+}
