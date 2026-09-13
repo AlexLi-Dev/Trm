@@ -125,10 +125,10 @@ type KubeUtilserDef interface {
 	DeleteListwithfaild(string, []string, *int64) (failed []string)
 }
 type DelepodList struct {
-	kubeutils.Pod
+	kubeutils.KubeUtilser
 }
 
-func (c DelepodList) DeleteListwithfaild(namespace string, nameList []string, gracePeriodSeconds *int64) (failed []string) {
+func (c *DelepodList) DeleteListwithfaild(namespace string, nameList []string, gracePeriodSeconds *int64) (failed []string) {
 	for _, name := range nameList {
 		if err := c.Delete(namespace, name, gracePeriodSeconds); err != nil {
 			failed = append(failed, fmt.Sprintf("%s:%s", name, err.Error()))
