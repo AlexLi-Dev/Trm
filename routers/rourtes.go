@@ -10,7 +10,8 @@ import (
 	"github.com/AlexLi-Dev/Trm/routers/node"
 	"github.com/AlexLi-Dev/Trm/routers/pod"
 	"github.com/AlexLi-Dev/Trm/routers/replicaset"
-	"github.com/AlexLi-Dev/Trm/routers/statefulset"
+	"github.com/AlexLi-Dev/Trm/routers/service"
+	statefulset "github.com/AlexLi-Dev/Trm/routers/statefulset"
 	"github.com/gin-gonic/gin"
 )
 import "github.com/AlexLi-Dev/Trm/routers/auth"
@@ -27,6 +28,7 @@ func RegisterRouters(r *gin.Engine) {
 	cronjob.RegisterSubRouter(apiGroup)
 	replicaset.RegisterSubRouter(apiGroup)
 	node.RegisterSubRouter(apiGroup)
+	service.RegisterSubRouter(apiGroup)
 }
 
 //kubectl get replicasets.apps -n testa
