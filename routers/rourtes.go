@@ -11,11 +11,13 @@ import (
 	"github.com/AlexLi-Dev/Trm/routers/namespace"
 	"github.com/AlexLi-Dev/Trm/routers/node"
 	"github.com/AlexLi-Dev/Trm/routers/persistentvolume"
+	"github.com/AlexLi-Dev/Trm/routers/persistentvolumeclaim"
 	"github.com/AlexLi-Dev/Trm/routers/pod"
 	"github.com/AlexLi-Dev/Trm/routers/replicaset"
 	"github.com/AlexLi-Dev/Trm/routers/secret"
 	"github.com/AlexLi-Dev/Trm/routers/service"
 	statefulset "github.com/AlexLi-Dev/Trm/routers/statefulset"
+	"github.com/AlexLi-Dev/Trm/routers/storageclass"
 	"github.com/gin-gonic/gin"
 )
 import "github.com/AlexLi-Dev/Trm/routers/auth"
@@ -37,6 +39,8 @@ func RegisterRouters(r *gin.Engine) {
 	configmap.RegisterSubRouter(apiGroup)
 	secret.RegisterSubRouter(apiGroup)
 	persistentvolume.RegisterSubRouter(apiGroup)
+	persistentvolumeclaim.RegisterSubRouter(apiGroup)
+	storageclass.RegisterSubRouter(apiGroup)
 }
 
 //kubectl get replicasets.apps -n testa
