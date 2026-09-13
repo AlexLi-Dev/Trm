@@ -10,6 +10,7 @@ import (
 	"github.com/AlexLi-Dev/Trm/routers/ingress"
 	"github.com/AlexLi-Dev/Trm/routers/namespace"
 	"github.com/AlexLi-Dev/Trm/routers/node"
+	"github.com/AlexLi-Dev/Trm/routers/persistentvolume"
 	"github.com/AlexLi-Dev/Trm/routers/pod"
 	"github.com/AlexLi-Dev/Trm/routers/replicaset"
 	"github.com/AlexLi-Dev/Trm/routers/secret"
@@ -35,6 +36,7 @@ func RegisterRouters(r *gin.Engine) {
 	ingress.RegisterSubRouter(apiGroup)
 	configmap.RegisterSubRouter(apiGroup)
 	secret.RegisterSubRouter(apiGroup)
+	persistentvolume.RegisterSubRouter(apiGroup)
 }
 
 //kubectl get replicasets.apps -n testa
